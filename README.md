@@ -34,6 +34,7 @@ Example `useEffect` with equality function
 ```typescript
 import * as Eq from "fp-ts/Eq";
 import * as O from "fp-ts/Option";
+import { useStableEffect } from "fp-ts-react-stable-hooks";
 
 const data: Option<string> = some("foobar");
 
