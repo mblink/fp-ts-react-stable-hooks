@@ -1,0 +1,45 @@
+{
+  "name": "fp-ts-react-stable-hooks",
+  "version": "1.0.0",
+  "description": "Stable hooks for react using FP-TS equality checks instead of shallow (reference) object comparison",
+  "main": "src/index.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "lint": "eslint --config='.eslintrc.js' './src/*.{ts,tsx}' --fix"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mblink/fp-ts-react-stable-hooks.git"
+  },
+  "keywords": [
+    "fp-ts",
+    "react",
+    "useState",
+    "useEffect",
+    "useStable",
+    "stable",
+    "equality",
+    "deep",
+    "object",
+    "comparison"
+  ],
+  "author": "jleider",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mblink/fp-ts-react-stable-hooks/issues"
+  },
+  "homepage": "https://github.com/mblink/fp-ts-react-stable-hooks#readme",
+  "devDependencies": {
+    "@types/react": "^16.8.0",
+    "@typescript-eslint/eslint-plugin": "~4.16.1",
+    "@typescript-eslint/parser": "~4.16.1",
+    "eslint": "~7.21.0",
+    "fp-ts": "^2.0.0",
+    "react": "^16.8.0",
+    "typescript": "^4.2.2"
+  },
+  "peerDependencies": {
+    "fp-ts": ">= 2.0.0",
+    "react": ">= 16.8.0"
+  }
+}
