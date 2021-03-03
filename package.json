@@ -6,7 +6,8 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "lint": "eslint --config='.eslintrc.js' './src/*.{ts,tsx}' --fix"
+    "lint": "eslint --config='.eslintrc.js' './src/*.{ts,tsx}' --fix",
+    "prepare": "npm run build"
   },
   "repository": {
     "type": "git",
