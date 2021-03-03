@@ -45,7 +45,7 @@ useStableEffect(() => {
 
 ## API
 
-| React Hook | Stable Hook | Description |
+| React&nbsp;Hook | Stable Hook | Description |
 |------------|-------------|-------------|
 | useState   | useStable   | Base hook that requires an equality function |
 |            | useStableE  | Helper function which automatically proves the top level equality function for `Option` |
