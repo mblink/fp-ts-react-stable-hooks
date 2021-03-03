@@ -41,7 +41,7 @@ const data: O.Option<string> = O.some("foobar");
 useStableEffect(() => {
   // Typical react useEffect function goes in here
   ...
-}, [data], O.getEq(Eq.eqString));
+}, [data], Eq.getTupleEq(O.getEq(Eq.eqString)));
 ```
 
 ## API
