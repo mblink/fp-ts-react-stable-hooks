@@ -9,7 +9,7 @@ npm install fp-ts-react-stable-hooks
 
 ## Usage
 
-Simple example `useState` with `Option` equality function
+Simple example `useStableO` with `Option` helper equality function
 ```typescript
 import * as Eq from "fp-ts/Eq";
 import * as O from "fp-ts/Option";
@@ -19,14 +19,14 @@ import { useStableO } from "fp-ts-react-stable-hooks";
 const [data, setData] = useStableO<string>(some("foobar"));
 ```
 
-Complex example `useState` with `Option` equality function
+Complex example `useStable` with equality function
 ```typescript
 import * as Eq from "fp-ts/Eq";
 import * as O from "fp-ts/Option";
-import { useStableO } from "fp-ts-react-stable-hooks";
+import { useStable } from "fp-ts-react-stable-hooks";
 
 
-const [data, setData] = useStableO<{foo: string, bar: number}>(some(foo: "oof", bar: 1}), Eq.eqStruct({foo: Eq.eqString, bar: Eq.eqNumber}));
+const [data, setData] = useStable<{foo: string, bar: number}>(some(foo: "oof", bar: 1}), O.getEq(Eq.eqStruct({foo: Eq.eqString, bar: Eq.eqNumber})));
 ```
 
 Example `useEffect` with equality function
