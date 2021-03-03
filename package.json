@@ -2,7 +2,7 @@
   "name": "fp-ts-react-stable-hooks",
   "version": "1.0.0",
   "description": "Stable hooks for react using FP-TS equality checks instead of shallow (reference) object comparison",
-  "main": "src/index.ts",
+  "main": "dist/index.js",
   "types": "src/index.d.ts",
   "scripts": {
     "build": "tsc -p tsconfig.json",
