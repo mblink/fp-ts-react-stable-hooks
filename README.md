@@ -52,3 +52,11 @@ useStableEffect(() => {
 |            | useStableE  | Helper function which automatically proves the top level equality function for `Either` |
 |            | useStableO  | Helper function which automatically proves the top level equality function for `Option` |
 | useEffect  | useStableEffect | Base hook that requires an equality function |
+
+## React Hooks Linter
+If you already use the recommended react hooks lint rule you can add this to your `eslint` file.
+```typescript
+"react-hooks/exhaustive-deps": ["warn", {
+  "additionalHooks": "(useStableEffect)"
+}]
+```
