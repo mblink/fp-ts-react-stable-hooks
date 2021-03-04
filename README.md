@@ -26,7 +26,7 @@ import * as O from "fp-ts/Option";
 import { useStable } from "fp-ts-react-stable-hooks";
 
 
-const [data, setData] = useStable<{foo: string, bar: number}>(O.some(foo: "oof", bar: 1}), O.getEq(Eq.eqStruct({foo: Eq.eqString, bar: Eq.eqNumber})));
+const [data, setData] = useStable<O.Option<{foo: string, bar: number}>>(O.some(foo: "oof", bar: 1}), O.getEq(Eq.eqStruct({foo: Eq.eqString, bar: Eq.eqNumber})));
 ```
 
 Example `useEffect` with equality function
