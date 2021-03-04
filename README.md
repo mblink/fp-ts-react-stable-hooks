@@ -15,8 +15,9 @@ import * as Eq from "fp-ts/Eq";
 import * as O from "fp-ts/Option";
 import { useStableO } from "fp-ts-react-stable-hooks";
 
-// Equality function defaults to Eq.eqStrict so there is no need to provide it for primitive data types such as string, number, or boolean
-const [data, setData] = useStableO<string>(O.some("foobar"));
+// Equality function defaults to Eq.eqStrict so there is no need to provide 
+// it for primitive data types such as string, number, or boolean
+const [data, setData] = useStableO(O.some("foobar"));
 ```
 
 Complex example `useStable` with equality function
@@ -25,8 +26,10 @@ import * as Eq from "fp-ts/Eq";
 import * as O from "fp-ts/Option";
 import { useStable } from "fp-ts-react-stable-hooks";
 
-
-const [data, setData] = useStable<{foo: string, bar: number}>(O.some(foo: "oof", bar: 1}), O.getEq(Eq.eqStruct({foo: Eq.eqString, bar: Eq.eqNumber})));
+const [data, setData] = useStable(
+  O.some({foo: "oof", bar: 1}), 
+  O.getEq(Eq.eqStruct({foo: Eq.eqString, bar: Eq.eqNumber}))
+);
 ```
 
 Example `useEffect` with equality function
