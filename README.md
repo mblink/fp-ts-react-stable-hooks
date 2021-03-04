@@ -1,5 +1,9 @@
 # fp-ts-react-stable-hooks
-Stable hooks for react using FP-TS equality checks instead of shallow (reference) object comparison
+Stable hooks for react using FP-TS equality checks instead of shallow (reference) object comparison.
+
+By deafult React will perform a JavaScript object reference comparison of two objects, otherwise known as shallow object comparison, which results in extra re-renders on “unchanged” values for fp-ts data types. 
+
+For example: Take an fp-ts type such as `Option` who’s underlying data structure is is `{_tag: "Some", value: 1}`. Compared with another `Option` who's value is also `{_tag: "Some", value: 1}`, will be considered a different object with JavaScript object reference comparison since `O.some(1) !== O.some(1)`. However, an equality function can dive down into the underlying `value` type and prove its equality. Given that, an equality function such as `O.getEq(Eq.eqNumber)` can prove that `O.getEq(Eq.eqNumber).equals(O.some(1), O.some(1)) === true`. Using these stable hooks instead of the basic react hooks will result in fewer unnecessary re-renders when using fp-ts data types. 
 
 ## Installation
 
