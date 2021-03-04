@@ -9,7 +9,7 @@
     "build": "tsc -p tsconfig.json && tsc -p tsconfig.commonjs.json",
     "clean": "rimraf ./dist",
     "lint:no-fix": "eslint --config='.eslintrc.js' './src/*.{ts,tsx}' './test/*.{ts,tsx}'",
-    "lint": "npm run lint --fix",
+    "lint": "npm run lint:no-fix -- --fix",
     "prepare": "npm run clean && npm run build",
     "prepublishOnly": "npm run test -- --ci --silent && npm run lint:no-fix -- --max-warnings 0",
     "test": "jest",
