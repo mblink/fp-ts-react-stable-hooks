@@ -49,6 +49,6 @@ useStableEffect(() => {
 | React&nbsp;Hook | Stable Hook | Description |
 |------------|-------------|-------------|
 | useState   | useStable   | Base hook that requires an equality function |
-|            | useStableE  | Helper function which automatically proves the top level equality function for `Option` |
-|            | useStableO  | Helper function which automatically proves the top level equality function for `Either` |
+|            | useStableE  | Helper function which automatically proves the top level equality function for `Either` |
+|            | useStableO  | Helper function which automatically proves the top level equality function for `Option` |
 | useEffect  | useStableEffect | Base hook that requires an equality function |
