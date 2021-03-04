@@ -2,6 +2,7 @@ module.exports = {
   env: {
     es6: true,
     node: true,
+    jest: true,
   },
   extends: [
     "eslint:recommended",
@@ -10,8 +11,8 @@ module.exports = {
   parserOptions: {
     project: [
       "tsconfig.json",
+      "test/tsconfig.json"
     ],
-    tsconfigRootDir: __dirname,
   },
   plugins: [
     "@typescript-eslint",
