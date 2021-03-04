@@ -6,8 +6,11 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "lint": "eslint --config='.eslintrc.js' './src/*.{ts,tsx}' './test/*.{ts,tsx}' --fix",
-    "prepare": "npm run build",
+    "clean": "rimraf ./dist",
+    "lint:no-fix": "eslint --config='.eslintrc.js' './src/*.{ts,tsx}' './test/*.{ts,tsx}'",
+    "lint": "npm run lint --fix",
+    "prepare": "npm run clean && npm run build",
+    "prepublishOnly": "npm run test -- --ci --silent && npm run lint:no-fix -- --max-warnings 0",
     "test": "jest",
     "test:watch": "jest --watch"
   },
