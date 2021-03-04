@@ -1,11 +1,12 @@
 {
   "name": "fp-ts-react-stable-hooks",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "Stable hooks for react using FP-TS equality checks instead of shallow (reference) object comparison",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "dist/lib/index.js",
+  "module": "dist/es2015/index.js",
+  "types": "dist/es2015/index.d.ts",
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "build": "tsc -p tsconfig.json && tsc -p tsconfig.commonjs.json",
     "clean": "rimraf ./dist",
     "lint:no-fix": "eslint --config='.eslintrc.js' './src/*.{ts,tsx}' './test/*.{ts,tsx}'",
     "lint": "npm run lint --fix",

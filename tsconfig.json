@@ -18,7 +18,7 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "pretty": true,
-    "outDir": "./dist",
+    "outDir": "./dist/es2015",
     "sourceMap": true,
     "strict": true,
     "target": "es5"
