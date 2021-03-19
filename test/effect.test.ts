@@ -1,7 +1,7 @@
 import * as Eq from 'fp-ts/Eq';
 import * as O from 'fp-ts/Option';
 import { renderHook } from '@testing-library/react-hooks';
-import { useStableEffect } from '../src/effect';
+import { useStableEffect } from '../src/index';
 
 const o1a = O.some(1);
 const o1b = O.some(1);

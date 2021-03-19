@@ -2,7 +2,7 @@ import * as E from 'fp-ts/Either';
 import * as Eq from 'fp-ts/Eq';
 import * as O from 'fp-ts/Option';
 import { act, renderHook } from '@testing-library/react-hooks';
-import { useStable, useStableE, useStableO } from '../src/state';
+import { useStable, useStableE, useStableO } from '../src/index';
 import { Dispatch } from 'react';
 
 const o1a = O.some(1);
