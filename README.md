@@ -1,5 +1,5 @@
 # fp-ts-react-stable-hooks
-Stable hooks for react using FP-TS equality checks instead of shallow (reference) object comparison.
+**Stable hooks for react using FP-TS equality checks instead of shallow (reference) object comparison.**
 
 ![license](https://img.shields.io/npm/l/fp-ts-react-stable-hooks)
 ![npm](https://img.shields.io/npm/v/fp-ts-react-stable-hooks)
