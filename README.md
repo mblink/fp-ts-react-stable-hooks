@@ -72,6 +72,6 @@ useStableEffect(() => {
 If you already use the recommended react hooks lint rule you can add this to your `eslint` file.
 ```typescript
 "react-hooks/exhaustive-deps": ["warn", {
-  "additionalHooks": "(useStableEffect,useStableCallback,useStableMemo)"
+  "additionalHooks": "(useStableEffect|useStableCallback|useStableMemo)"
 }]
 ```
