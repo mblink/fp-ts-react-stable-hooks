@@ -58,5 +58,36 @@ tests.forEach((t: Test) => {
 
       expect(result.current[0]).toStrictEqual(t.val2);
     });
+
+    test('should return the same value with an identity SetStateAction fn', () => {
+      const { result } = renderHook(() => t.fn(t.val1a));
+
+      act(() => {
+        result.current[1]((v: any) => v);
+      });
+
+      expect(result.current[0]).toStrictEqual(t.val1a);
+    });
+
+    test('should not update the state if the same value is returned from a SetStateAction fn', () => {
+      const { result } = renderHook(() => t.fn(t.val1a));
+
+      act(() => {
+        result.current[1](() => t.val1b);
+      });
+
+      expect(result.current[0]).toStrictEqual(t.val1a);
+    });
+
+
+    test('should update the state if a different value is returned from a SetStateAction fn', () => {
+      const { result } = renderHook(() => t.fn(t.val1a));
+
+      act(() => {
+        result.current[1](() => t.val2);
+      });
+
+      expect(result.current[0]).toStrictEqual(t.val2);
+    });
   });
 });
