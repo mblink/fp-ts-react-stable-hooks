@@ -61,14 +61,15 @@ useStableEffect(() => {
 
 ## API
 
-| React&nbsp;Hook | Stable&nbsp;Hook | Description |
-|-------------|-------------------|-------------|
-| useState    | useStable         | Base hook that requires an equality function |
-|             | useStableE        | Helper function which automatically proves the top level equality function for `Either` |
-|             | useStableO        | Helper function which automatically proves the top level equality function for `Option` |
-| useEffect   | useStableEffect   | Base hook that requires an equality function |
-| useCallback | useStableCallback | Base hook that requires an equality function |
-| useMemo     | useStableMemo     | Base hook that requires an equality function |
+| React&nbsp;Hook | Stable&nbsp;Hook      | Description |
+|-----------------|-----------------------|-------------|
+| useState        | useStable             | Base hook that requires an equality function |
+|                 | useStableE            | Helper function which automatically proves the top level equality function for `Either` |
+|                 | useStableO            | Helper function which automatically proves the top level equality function for `Option` |
+| useEffect       | useStableEffect       | Base hook that requires an equality function |
+| useLayoutEffect | useStableLayoutEffect | Base hook that requires an equality function |
+| useCallback     | useStableCallback     | Base hook that requires an equality function |
+| useMemo         | useStableMemo         | Base hook that requires an equality function |
 
 ## React Hooks Linter
 If you already use the recommended react hooks lint rule you can add this to your `eslint` file.
