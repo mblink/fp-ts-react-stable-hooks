@@ -1,11 +1,9 @@
 import * as Eq from 'fp-ts/Eq';
 import * as O from 'fp-ts/Option';
+import { o1a, o1b, o2 } from './state';
 import { renderHook } from '@testing-library/react-hooks';
 import { useStableMemo } from '../src/index';
 
-const o1a = O.some(1);
-const o1b = O.some(1);
-const o2 = O.some(2);
 const nEq = Eq.getTupleEq(O.getEq(Eq.eqNumber));
 
 describe('useStableMemo', () => {

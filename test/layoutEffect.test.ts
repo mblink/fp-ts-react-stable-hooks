@@ -1,13 +1,13 @@
 import * as O from 'fp-ts/Option';
 import { nEq, o1a, o1b, o2 } from './state';
 import { renderHook } from '@testing-library/react-hooks';
-import { useStableEffect } from '../src/index';
+import { useStableLayoutEffect } from '../src/index';
 
-describe('useStableEffect', () => {
+describe('useStableLayoutEffect', () => {
   test('should not be called if the values are the same', () => {
     let o = o1a;
     const { rerender } = renderHook(() => {
-      useStableEffect(() => { o = o2; }, [o], nEq);
+      useStableLayoutEffect(() => { o = o2; }, [o], nEq);
     });
     o = o1b;
     rerender();
@@ -18,7 +18,7 @@ describe('useStableEffect', () => {
     const o99 = O.some(99);
     let o = o1a;
     const { rerender } = renderHook(() => {
-      useStableEffect(() => { o = o99; }, [o], nEq);
+      useStableLayoutEffect(() => { o = o99; }, [o], nEq);
     });
     o = o2;
     rerender();
