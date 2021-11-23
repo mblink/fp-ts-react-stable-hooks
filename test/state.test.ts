@@ -1,16 +1,9 @@
-import * as E from 'fp-ts/Either';
 import * as Eq from 'fp-ts/Eq';
 import * as O from 'fp-ts/Option';
 import { act, renderHook } from '@testing-library/react-hooks';
+import { e1a, e1b, e2, o1a, o1b, o2 } from './state';
 import { useStable, useStableE, useStableO } from '../src/index';
 import { Dispatch } from 'react';
-
-const o1a = O.some(1);
-const o1b = O.some(1);
-const o2 = O.some(2);
-const e1a = E.right(1);
-const e1b = E.right(1);
-const e2 = E.right(2);
 
 type Test<A = any> = {describe: string, fn: (a: A) => [A, Dispatch<A>], val1a: A, val1b: A, val2: A};
 const tests: Test[] = [
