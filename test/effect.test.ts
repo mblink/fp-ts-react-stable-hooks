@@ -1,4 +1,3 @@
-import * as Eq from 'fp-ts/Eq';
 import * as O from 'fp-ts/Option';
 import { nEq, o1a, o1b, o2 } from './state';
 import { renderHook } from '@testing-library/react-hooks';
