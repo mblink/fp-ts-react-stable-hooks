@@ -17,11 +17,9 @@ export const useEqMemoize = <A extends ReadonlyArray<unknown>>(
 
   if (!eq.equals(value, ref.current)) {
     // https://stackoverflow.com/questions/35469836/detecting-production-vs-development-react-at-runtime
-    if(options && options.debug && process.env.NODE_ENV !== 'production') {
-      /* eslint-disable no-console */
-      console.info('Stable hook update triggered:');
-      console.table({ 'prev': ref.current, 'value': value });
-      /* eslint-enable no-console */
+    if (options && options.debug && process.env.NODE_ENV !== 'production') {
+      // eslint-disable-next-line no-console
+      console.info('Stable hook update triggered:', { 'prev': ref.current, 'value': value });
     }
     ref.current = value;
     signalRef.current += 1;
