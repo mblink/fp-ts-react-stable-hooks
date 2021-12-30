@@ -1,6 +1,6 @@
 {
   "name": "fp-ts-react-stable-hooks",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "Stable hooks for react using FP-TS equality checks instead of shallow (reference) object comparison",
   "main": "dist/lib/index.js",
   "module": "dist/es2015/index.js",

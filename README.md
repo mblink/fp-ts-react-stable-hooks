@@ -59,6 +59,14 @@ useStableEffect(() => {
 }, [data], Eq.getTupleEq(O.getEq(Eq.eqString)));
 ```
 
+## Debugging Your Hooks
+
+You can console log the reasons behind why certain hooks are called again by passing a debug flag to each one of the
+stable hooks which have equality functions provided in the API. The last parameter of the function is now a config
+object: `StableHookOptions`.
+
+You can pass `{debug: true}` to have the console logs printed in all environments except for `production`.
+
 ## API
 
 | React&nbsp;Hook | Stable&nbsp;Hook      | Description |
