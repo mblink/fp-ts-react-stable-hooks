@@ -1,37 +1,33 @@
-import { Dispatch, SetStateAction, useReducer } from 'react';
-
 import * as E from 'fp-ts/Either';
-import { eqStrict } from "fp-ts/Eq"
+import * as Eq from 'fp-ts/Eq';
 import * as O from 'fp-ts/Option';
+import { Dispatch, SetStateAction, useReducer } from 'react';
+import type { Endomorphism } from 'fp-ts/Endomorphism';
 
-import type { Eq } from "fp-ts/Eq"
-import type { Either } from 'fp-ts/lib/Either'
-import type { Option } from 'fp-ts/Option'
+import Either = E.Either;
+import Option = O.Option;
 
-const isSetStateFn = <A>(s: SetStateAction<A>): s is (a: A) => A => typeof s === 'function';
-
+type Eq<A> = Eq.Eq<A>; // eslint-disable-line @typescript-eslint/no-redeclare
 type StateTuple<A> = [A, Dispatch<SetStateAction<A>>];
+
+/** @internal */
+const isSetter = <A>(s: SetStateAction<A>): s is Endomorphism<A> => typeof s === 'function';
 
 export const useStable = <A>(initState: A, eq: Eq<A>): StateTuple<A> =>
   useReducer(
-    (...[s1, s2]: StateTuple<A>) => {
-      const _s2 = isSetStateFn<A>(s2) ? s2(s1) : s2;
-      return eq.equals(s1, _s2) ? s1 : _s2;
+    (prev: A, ss: SetStateAction<A>) => {
+      const next = isSetter(ss) ? ss(prev) : ss;
+      return eq.equals(prev, next) ? prev : next;
     },
     initState
   );
 
-export function useStableO<A>(initState: Option<A>): StateTuple<Option<A>>
-export function useStableO<A>(initState: Option<A>, eq: Eq<A>): StateTuple<Option<A>>
-export function useStableO<A>(initState: Option<A>, eq?: Eq<A>): StateTuple<Option<A>> {
-  const eq_ = eq ?? eqStrict
-  return useStable(initState, O.getEq(eq_))
-}
+export const useStableO = <A>(initialState: Option<A>, eq: Eq<A> = Eq.eqStrict): StateTuple<Option<A>> =>
+  useStable(initialState, O.getEq(eq));
 
-export function useStableE<E, A>(initState: Either<E, A>): StateTuple<Either<E, A>>
-export function useStableE<E, A>(initState: Either<E, A>, leftEq: Eq<E>, rightEq: Eq<A>): StateTuple<Either<E, A>>
-export function useStableE<E, A>(initState: Either<E, A>, leftEq?: Eq<E>, rightEq?: Eq<A>): StateTuple<Either<E, A>> {
-  if (leftEq && rightEq) return useStable(initState, E.getEq(leftEq, rightEq))
-  else return useStable(initState, E.getEq(eqStrict, eqStrict))
+export function useStableE<E, A>(initialState: Either<E, A>): StateTuple<Either<E, A>>;
+export function useStableE<E, A>(initialState: Either<E, A>, leftEq: Eq<E>, rightEq: Eq<A>): StateTuple<Either<E, A>>;
+export function useStableE<E, A>(initialState: Either<E, A>, leftEq?: Eq<E>, rightEq?: Eq<A>): StateTuple<Either<E, A>> {
+  if (leftEq && rightEq) return useStable(initialState, E.getEq(leftEq, rightEq));
+  else return useStable(initialState, E.getEq(Eq.eqStrict, Eq.eqStrict));
 }
-
