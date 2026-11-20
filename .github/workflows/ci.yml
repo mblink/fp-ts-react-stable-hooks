@@ -1,23 +1,19 @@
 name: CI
 
-on: push
+on:
+  push:
+  pull_request:
 
 jobs:
-  run-linters:
-    name: Run CI
+  ci:
+    name: Build, test and lint
     runs-on: ubuntu-latest
-
     steps:
-      - name: Check out Git repository
-        uses: actions/checkout@v2
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: 14
-
-      - name: Install Node.js dependencies
-        run: npm ci
-
-      - name : Run test
-        run: npm run prepublishOnly
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run prepublishOnly

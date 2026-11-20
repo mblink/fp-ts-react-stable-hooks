@@ -1,6 +1,14 @@
 {
   "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "..",
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "lib": ["es2020", "dom"],
+    "types": ["jest", "node"]
+  },
   "include": [
-    "./*.ts"
+    "./*.ts",
+    "./*.tsx"
   ]
 }

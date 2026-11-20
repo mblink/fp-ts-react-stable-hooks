@@ -1,86 +1,92 @@
-import * as Eq from 'fp-ts/Eq';
+import * as E from 'fp-ts/Either';
+import * as N from 'fp-ts/number';
 import * as O from 'fp-ts/Option';
-import { act, renderHook } from '@testing-library/react-hooks';
-import { e1a, e1b, e2, o1a, o1b, o2 } from './state';
+import { Dispatch, SetStateAction } from 'react';
+import { act, renderHook } from '@testing-library/react';
+import { e1a, e1b, e2, o1a, o1b, o2 } from './fixtures';
 import { useStable, useStableE, useStableO } from '../src/index';
-import { Dispatch } from 'react';
 
-type Test<A = any> = {describe: string, fn: (a: A) => [A, Dispatch<A>], val1a: A, val1b: A, val2: A};
-const tests: Test[] = [
-  {
-    describe: 'useStable',
-    fn: (o: O.Option<number>) => useStable(o, O.getEq(Eq.eqNumber)),
-    val1a: o1a,
-    val1b: o1b,
-    val2: o2,
-  },
-  {
-    describe: 'useStableO',
-    fn: useStableO,
-    val1a: o1a,
-    val1b: o1b,
-    val2: o2,
-  },
-  {
-    describe: 'useStableE',
-    fn: useStableE,
-    val1a: e1a,
-    val1b: e1b,
-    val2: e2,
-  }
+type Case<A> = {
+  name: string;
+  useHook: (a: A) => [A, Dispatch<SetStateAction<A>>];
+  val1a: A;
+  val1b: A;
+  val2: A;
+};
+
+const optionEq = O.getEq(N.Eq);
+const cases: ReadonlyArray<Case<O.Option<number>> | Case<E.Either<never, number>>> = [
+  { name: 'useStable', useHook: (o: O.Option<number>) => useStable(o, optionEq), val1a: o1a, val1b: o1b, val2: o2 },
+  { name: 'useStableO', useHook: useStableO, val1a: o1a, val1b: o1b, val2: o2 },
+  { name: 'useStableE', useHook: useStableE, val1a: e1a, val1b: e1b, val2: e2 },
 ];
 
-tests.forEach((t: Test) => {
-  describe(t.describe, () => {
-    test('should not update the state if the same value is used', () => {
-      const { result } = renderHook(() => t.fn(t.val1a));
+describe.each(cases as ReadonlyArray<Case<unknown>>)('$name', (t) => {
+  const setup = () => renderHook(() => t.useHook(t.val1a));
 
-      act(() => {
-        result.current[1](t.val1b);
-      });
+  test('returns the initial state', () => {
+    const { result } = setup();
+    expect(result.current[0]).toBe(t.val1a);
+  });
 
-      expect(result.current[0]).toStrictEqual(t.val1a);
+  test('keeps the original reference when set to an equal value', () => {
+    const { result } = setup();
+    act(() => result.current[1](t.val1b));
+    expect(result.current[0]).toBe(t.val1a);
+  });
+
+  test('updates when set to a different value', () => {
+    const { result } = setup();
+    act(() => result.current[1](t.val2));
+    expect(result.current[0]).toBe(t.val2);
+  });
+
+  test('keeps the original reference when an updater returns an equal value', () => {
+    const { result } = setup();
+    act(() => result.current[1](() => t.val1b));
+    expect(result.current[0]).toBe(t.val1a);
+  });
+
+  test('updates when an updater returns a different value', () => {
+    const { result } = setup();
+    act(() => result.current[1](() => t.val2));
+    expect(result.current[0]).toBe(t.val2);
+  });
+
+  test('passes the current state to the updater', () => {
+    const { result } = setup();
+    const updater = jest.fn((a: unknown) => a);
+    act(() => result.current[1](updater));
+    expect(updater).toHaveBeenCalledWith(t.val1a);
+  });
+
+  test('applies queued updaters in order against the latest state', () => {
+    const { result } = setup();
+    act(() => {
+      result.current[1](t.val2);
+      result.current[1](t.val1b);
     });
+    expect(result.current[0]).toBe(t.val1b);
+  });
 
-    test('should update the state if a different value is used', () => {
-      const { result } = renderHook(() => t.fn(t.val1a));
+  test('returns a stable setter across renders', () => {
+    const { result, rerender } = setup();
+    const setter = result.current[1];
+    rerender();
+    act(() => result.current[1](t.val2));
+    expect(result.current[1]).toBe(setter);
+  });
+});
 
-      act(() => {
-        result.current[1](t.val2);
-      });
-
-      expect(result.current[0]).toStrictEqual(t.val2);
-    });
-
-    test('should return the same value with an identity SetStateAction fn', () => {
-      const { result } = renderHook(() => t.fn(t.val1a));
-
-      act(() => {
-        result.current[1]((v: any) => v);
-      });
-
-      expect(result.current[0]).toStrictEqual(t.val1a);
-    });
-
-    test('should not update the state if the same value is returned from a SetStateAction fn', () => {
-      const { result } = renderHook(() => t.fn(t.val1a));
-
-      act(() => {
-        result.current[1](() => t.val1b);
-      });
-
-      expect(result.current[0]).toStrictEqual(t.val1a);
-    });
-
-
-    test('should update the state if a different value is returned from a SetStateAction fn', () => {
-      const { result } = renderHook(() => t.fn(t.val1a));
-
-      act(() => {
-        result.current[1](() => t.val2);
-      });
-
-      expect(result.current[0]).toStrictEqual(t.val2);
-    });
+describe('useStable', () => {
+  test('uses the latest Eq passed in', () => {
+    const always = { equals: () => true };
+    const never = { equals: () => false };
+    const { result, rerender } = renderHook(({ eq }) => useStable(o1a, eq), { initialProps: { eq: always } });
+    act(() => result.current[1](o2));
+    expect(result.current[0]).toBe(o1a);
+    rerender({ eq: never });
+    act(() => result.current[1](o1b));
+    expect(result.current[0]).toBe(o1b);
   });
 });
