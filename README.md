@@ -145,7 +145,7 @@ npm run lint           # ESLint with --fix
 npm run prepublishOnly # clean, build, test, lint (what CI runs)
 ```
 
-The test suite includes render-counting tests (`test/renders.test.tsx`) that check the library's core promise, that equal values don't cause renders, alongside a plain-React control case for each.
+The test suite includes render-counting tests (`test/renders.test.tsx`) that check the library's core promise, that equal values don't cause renders, alongside a plain-React control case for each. AI coding agents: see [`CLAUDE.md`](CLAUDE.md) and `.claude/skills/` for repository conventions.
 
 ## License
 
