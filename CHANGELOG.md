@@ -15,6 +15,7 @@
 
 ### Added
 
+- `useStableO(init, eq?)` and `useStableE(init, leftEq?, rightEq?)` take optional `Eq`s for the values inside, so structured values no longer need `useStable(init, O.getEq(eq))`. They default to `===`, so existing calls are unchanged. (Proposed by @ahrjarrett in #8.)
 - `StableHookOptions.format`: format dependencies for React DevTools.
 - `useStable` takes an optional `formatDebugValue`; `useStableO`/`useStableE` label values as `None` / `{ Some: a }` / `{ Left: e }` / `{ Right: a }` in DevTools.
 - Full JSDoc on every public export: behaviour, differences from the React hook, parameters, return values and examples.

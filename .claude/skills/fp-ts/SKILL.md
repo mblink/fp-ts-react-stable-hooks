@@ -28,7 +28,7 @@ Namespace imports from the top-level module path (`fp-ts/Option`), never `fp-ts/
 - Equality for fp-ts values always goes through an `Eq`, never `===` on objects — that's the whole point of the library.
 - Derive instances (`O.getEq(inner)`, `E.getEq(l, r)`, `Eq.getTupleEq(...)`, `Eq.contramap`) rather than `Eq.fromEquals((a, b) => ...)`.
 - Dependency-array hooks take one `Eq` over the whole deps tuple; the type parameter `A extends ReadonlyArray<unknown>` ties it to the deps, so a mismatched tuple length or element type is a compile error. Keep that link — don't widen `eq` to `Eq<unknown>`.
-- `useStableO`/`useStableE` deliberately compare only the top-level structure with `Eq.eqStrict` inside; callers needing deeper equality use `useStable` with their own `Eq`.
+- `useStableO`/`useStableE` take optional `Eq`s for the values inside, defaulting to `Eq.eqStrict` (top-level structure only). Defaults stay `Eq.eqStrict` so existing calls keep their behaviour.
 
 ## Combinators
 

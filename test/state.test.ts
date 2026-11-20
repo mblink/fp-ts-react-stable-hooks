@@ -2,6 +2,7 @@ import * as E from 'fp-ts/Either';
 import * as Eq from 'fp-ts/Eq';
 import * as N from 'fp-ts/number';
 import * as O from 'fp-ts/Option';
+import * as S from 'fp-ts/string';
 import { Dispatch, SetStateAction } from 'react';
 import { act, renderHook } from '@testing-library/react';
 import { e1a, e1b, e2, o1a, o1b, o2 } from './fixtures';
@@ -116,5 +117,101 @@ describe('DevTools formatters', () => {
     expect(showOption(O.none)).toBe('None');
     expect(showEither(E.left(bare))).toEqual({ Left: bare });
     expect(showEither(E.right(Symbol.iterator))).toEqual({ Right: Symbol.iterator });
+  });
+});
+
+describe('useStableO with an Eq', () => {
+  type User = { id: number, name: string };
+  const userEq = Eq.struct<User>({ id: N.Eq, name: S.Eq });
+  const ada = (): User => ({ id: 1, name: 'Ada' });
+
+  test('keeps the original reference when set to a structurally equal value', () => {
+    const initial = O.some(ada());
+    const { result } = renderHook(() => useStableO(initial, userEq));
+    act(() => result.current[1](O.some(ada())));
+    expect(result.current[0]).toBe(initial);
+  });
+
+  test('without an Eq, a structurally equal object still replaces the state (control)', () => {
+    const initial = O.some(ada());
+    const { result } = renderHook(() => useStableO(initial));
+    const next = O.some(ada());
+    act(() => result.current[1](next));
+    expect(result.current[0]).toBe(next);
+  });
+
+  test('updates when the value differs by the Eq', () => {
+    const { result } = renderHook(() => useStableO(O.some(ada()), userEq));
+    const grace = O.some({ id: 2, name: 'Grace' });
+    act(() => result.current[1](grace));
+    expect(result.current[0]).toBe(grace);
+  });
+
+  test('never treats None and Some as equal', () => {
+    const always: Eq.Eq<User> = { equals: () => true };
+    const { result } = renderHook(() => useStableO<User>(O.none, always));
+    const some = O.some(ada());
+    act(() => result.current[1](some));
+    expect(result.current[0]).toBe(some);
+  });
+
+  test('keeps a stable setter when the Eq is created inline on every render', () => {
+    const { result, rerender } = renderHook(() => useStableO(O.some(ada()), Eq.struct<User>({ id: N.Eq, name: S.Eq })));
+    const setter = result.current[1];
+    rerender();
+    expect(result.current[1]).toBe(setter);
+  });
+
+  test('uses a changed Eq once it has committed', () => {
+    const byId = Eq.contramap((u: User) => u.id)(N.Eq);
+    const initial = O.some(ada());
+    const { result, rerender } = renderHook(({ eq }) => useStableO(initial, eq), { initialProps: { eq: byId } });
+    const renamed = O.some({ id: 1, name: 'Augusta' });
+    act(() => result.current[1](renamed));
+    expect(result.current[0]).toBe(initial); // same id: equal under byId
+    rerender({ eq: userEq });
+    act(() => result.current[1](renamed));
+    expect(result.current[0]).toBe(renamed); // name differs under userEq
+  });
+});
+
+describe('useStableE with Eqs', () => {
+  type Err = { code: number };
+  const errEq = Eq.struct<Err>({ code: N.Eq });
+  const pointEq = Eq.struct<{ x: number }>({ x: N.Eq });
+
+  test('compares Left values with leftEq and Right values with rightEq', () => {
+    const left = E.left<Err, { x: number }>({ code: 1 });
+    const { result } = renderHook(() => useStableE(left, errEq, pointEq));
+    act(() => result.current[1](E.left({ code: 1 })));
+    expect(result.current[0]).toBe(left);
+    const right = E.right<Err, { x: number }>({ x: 1 });
+    act(() => result.current[1](right));
+    expect(result.current[0]).toBe(right);
+    act(() => result.current[1](E.right({ x: 1 })));
+    expect(result.current[0]).toBe(right);
+  });
+
+  test('only leftEq given: Right values still use strict equality', () => {
+    const right = E.right<Err, { x: number }>({ x: 1 });
+    const { result } = renderHook(() => useStableE(right, errEq));
+    const next = E.right<Err, { x: number }>({ x: 1 });
+    act(() => result.current[1](next));
+    expect(result.current[0]).toBe(next);
+  });
+
+  test('only rightEq customised (leftEq = Eq.eqStrict)', () => {
+    const right = E.right<Err, { x: number }>({ x: 1 });
+    const { result } = renderHook(() => useStableE(right, Eq.eqStrict, pointEq));
+    act(() => result.current[1](E.right({ x: 1 })));
+    expect(result.current[0]).toBe(right);
+  });
+
+  test('never treats Left and Right as equal', () => {
+    const always = { equals: () => true };
+    const { result } = renderHook(() => useStableE<number, number>(E.left(1), always, always));
+    const right = E.right<number, number>(1);
+    act(() => result.current[1](right));
+    expect(result.current[0]).toBe(right);
   });
 });

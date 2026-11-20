@@ -5,6 +5,7 @@
 import * as Eq from 'fp-ts/Eq';
 import * as N from 'fp-ts/number';
 import * as O from 'fp-ts/Option';
+import * as S from 'fp-ts/string';
 import { Dispatch, SetStateAction, StrictMode, Suspense, memo, startTransition, useMemo, useState } from 'react';
 import { act, render } from '@testing-library/react';
 import { nEq, o1a, o1b, o2 } from './fixtures';
@@ -47,6 +48,28 @@ describe('useStable render behaviour', () => {
     const t = setup(() => useState(o1a));
     t.set(o1b);
     expect(t.renders()).toBe(2);
+  });
+});
+
+describe('useStableO with an Eq render behaviour', () => {
+  type User = { id: number, name: string };
+  const userEq = Eq.struct<User>({ id: N.Eq, name: S.Eq });
+
+  test.each([
+    ['with a structural Eq', userEq, 1],
+    ['without an Eq (control: re-renders for a new object)', undefined, 2],
+  ] as const)('%s', (_, eq, expectedRenders) => {
+    let renders = 0;
+    let set: Dispatch<SetStateAction<O.Option<User>>> = () => undefined;
+    const Comp = () => {
+      renders += 1;
+      const [, setUser] = useStableO(O.some({ id: 1, name: 'Ada' }), eq);
+      set = setUser;
+      return null;
+    };
+    render(<Comp />);
+    act(() => set(O.some({ id: 1, name: 'Ada' })));
+    expect(renders).toBe(expectedRenders);
   });
 });
 

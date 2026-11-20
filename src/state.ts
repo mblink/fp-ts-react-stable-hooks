@@ -1,7 +1,7 @@
 import * as E from 'fp-ts/Either';
 import * as Eq from 'fp-ts/Eq';
 import * as O from 'fp-ts/Option';
-import { Dispatch, SetStateAction, useCallback, useDebugValue, useRef, useState } from 'react';
+import { Dispatch, SetStateAction, useCallback, useDebugValue, useMemo, useRef, useState } from 'react';
 import { useIsomorphicLayoutEffect } from './isomorphicLayoutEffect';
 
 const isSetStateFn = <A>(s: SetStateAction<A>): s is (a: A) => A => typeof s === 'function';
@@ -66,39 +66,61 @@ export const showOption = O.fold<unknown, unknown>(() => 'None', a => ({ Some: a
 export const showEither = E.fold<unknown, unknown, unknown>(l => ({ Left: l }), r => ({ Right: r }));
 
 /**
- * {@link useStable} for an `Option`. `None` equals `None`; two `Some`s are equal when their values are `===`.
+ * {@link useStable} for an `Option`. `None` equals `None`; two `Some`s are equal when `eq` says their values are.
  *
- * Compares one level deep only: `O.some({ a: 1 })` and another `O.some({ a: 1 })` are *not* equal. For structured
- * values use `useStable(init, O.getEq(valueEq))`. DevTools shows the state as `None` or `{ Some: value }`.
+ * Without `eq`, values are compared with `===`, so only primitives benefit: `O.some({ a: 1 })` and another
+ * `O.some({ a: 1 })` are *not* equal. Pass an `Eq` for the value type to compare structured values. DevTools shows the
+ * state as `None` or `{ Some: value }`.
  *
  * @typeParam A - The type of the optional value.
  * @param initState - The initial state.
+ * @param eq - Equality for the value inside `Some`. Defaults to strict equality (`===`).
  * @returns `[state, setState]`, as {@link useStable}.
  *
  * @example
  * ```ts
  * const [name, setName] = useStableO<string>(O.none);
+ *
+ * type User = { id: number; name: string };
+ * const userEq = Eq.struct<User>({ id: N.Eq, name: S.Eq }); // define once, outside the component
+ * const [user, setUser] = useStableO<User>(O.none, userEq);
  * ```
  */
-export const useStableO = <A>(initState: O.Option<A>): [O.Option<A>, Dispatch<SetStateAction<O.Option<A>>>] =>
-  useStable(initState, O.getEq(Eq.eqStrict), showOption);
+export const useStableO = <A>(
+  initState: O.Option<A>,
+  eq: Eq.Eq<A> = Eq.eqStrict,
+): [O.Option<A>, Dispatch<SetStateAction<O.Option<A>>>] => {
+  const optionEq = useMemo(() => O.getEq(eq), [eq]);
+  return useStable(initState, optionEq, showOption);
+};
 
 /**
- * {@link useStable} for an `Either`. Two `Left`s (or two `Right`s) are equal when their values are `===`; a `Left`
- * never equals a `Right`.
+ * {@link useStable} for an `Either`. Two `Left`s are equal when `leftEq` says their values are, two `Right`s when
+ * `rightEq` does; a `Left` never equals a `Right`.
  *
- * Compares one level deep only; for structured values use `useStable(init, E.getEq(leftEq, rightEq))`. DevTools
- * shows the state as `{ Left: value }` or `{ Right: value }`.
+ * Without the `Eq`s, values are compared with `===`, so only primitives benefit. Pass `Eq`s for structured values;
+ * either one can be given on its own (pass `Eq.eqStrict` as `leftEq` to customise only the right side). DevTools shows
+ * the state as `{ Left: value }` or `{ Right: value }`.
  *
  * @typeParam E - The type of the `Left` value.
  * @typeParam A - The type of the `Right` value.
  * @param initState - The initial state.
+ * @param leftEq - Equality for `Left` values. Defaults to strict equality (`===`).
+ * @param rightEq - Equality for `Right` values. Defaults to strict equality (`===`).
  * @returns `[state, setState]`, as {@link useStable}.
  *
  * @example
  * ```ts
  * const [result, setResult] = useStableE<string, number>(E.right(0));
+ *
+ * const [response, setResponse] = useStableE<ApiError, User>(E.right(initialUser), apiErrorEq, userEq);
  * ```
  */
-export const useStableE = <E, A>(initState: E.Either<E, A>): [E.Either<E, A>, Dispatch<SetStateAction<E.Either<E, A>>>] =>
-  useStable(initState, E.getEq(Eq.eqStrict, Eq.eqStrict), showEither);
+export const useStableE = <E, A>(
+  initState: E.Either<E, A>,
+  leftEq: Eq.Eq<E> = Eq.eqStrict,
+  rightEq: Eq.Eq<A> = Eq.eqStrict,
+): [E.Either<E, A>, Dispatch<SetStateAction<E.Either<E, A>>>] => {
+  const eitherEq = useMemo(() => E.getEq(leftEq, rightEq), [leftEq, rightEq]);
+  return useStable(initState, eitherEq, showEither);
+};
