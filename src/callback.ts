@@ -9,7 +9,7 @@ export const useStableCallback = <A extends ReadonlyArray<unknown>, T extends (.
   callback: T,
   dependencies: A,
   eq: Eq.Eq<A>,
-  options?: StableHookOptions,
+  options?: StableHookOptions<A>,
 ): T => {
   return useCallback(callback, useEqMemoize(dependencies, eq, options));
 };
