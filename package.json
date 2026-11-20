@@ -62,7 +62,7 @@
     "typescript-eslint": "^8.73.0"
   },
   "peerDependencies": {
-    "fp-ts": ">= 2.0.0",
-    "react": ">= 16.8.0"
+    "fp-ts": ">=2.8.0",
+    "react": ">=16.8.0"
   }
 }
