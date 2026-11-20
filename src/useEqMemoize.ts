@@ -3,11 +3,21 @@ import { useDebugValue, useRef } from 'react';
 import { StableHookOptions } from './options';
 
 // Declared locally so the library doesn't depend on Node or DOM type definitions.
-// Bundlers replace `process.env.NODE_ENV` at build time; the `typeof` guard covers unbundled environments.
 declare const process: { env: { NODE_ENV?: string } };
 declare const console: { info: (...args: ReadonlyArray<unknown>) => void };
 
-const isProduction = (): boolean => typeof process !== 'undefined' && process.env.NODE_ENV === 'production';
+/**
+ * `process.env.NODE_ENV` must appear verbatim and unguarded: bundlers replace that exact expression with a string
+ * literal, and browsers have no `process` global afterwards. Guarding with `typeof process` would make a production
+ * bundle report "not production". Unbundled code without `process` throws here and is treated as development.
+ */
+export const isProduction = (): boolean => {
+  try {
+    return process.env.NODE_ENV === 'production';
+  } catch {
+    return false;
+  }
+};
 
 /**
  * Turns `dependencies` into a one-element deps array (`[version]`) for a React hook. `version` only increments

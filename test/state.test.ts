@@ -5,6 +5,7 @@ import * as O from 'fp-ts/Option';
 import { Dispatch, SetStateAction } from 'react';
 import { act, renderHook } from '@testing-library/react';
 import { e1a, e1b, e2, o1a, o1b, o2 } from './fixtures';
+import { showEither, showOption } from '../src/state';
 import { useStable, useStableE, useStableO } from '../src/index';
 
 type Case<A> = {
@@ -105,5 +106,15 @@ describe('useStable', () => {
     const { result } = renderHook(() => useStable(fn, Eq.eqStrict));
     expect(result.current[0]).toBe(fn);
     expect(fn).not.toHaveBeenCalled();
+  });
+});
+
+describe('DevTools formatters', () => {
+  test('pass payloads through without coercing them to strings', () => {
+    const bare: unknown = Object.create(null);
+    expect(showOption(O.some(bare))).toEqual({ Some: bare });
+    expect(showOption(O.none)).toBe('None');
+    expect(showEither(E.left(bare))).toEqual({ Left: bare });
+    expect(showEither(E.right(Symbol.iterator))).toEqual({ Right: Symbol.iterator });
   });
 });

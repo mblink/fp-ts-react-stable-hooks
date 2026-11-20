@@ -21,8 +21,9 @@ export const useStable = <A>(
   return r;
 };
 
-const showOption = O.fold<unknown, string>(() => 'None', a => `Some(${String(a)})`);
-const showEither = E.fold<unknown, unknown, string>(l => `Left(${String(l)})`, r => `Right(${String(r)})`);
+// DevTools labels. Payloads are passed through raw (not stringified) so any value is inspectable and nothing throws.
+export const showOption = O.fold<unknown, unknown>(() => 'None', a => ({ Some: a }));
+export const showEither = E.fold<unknown, unknown, unknown>(l => ({ Left: l }), r => ({ Right: r }));
 
 export const useStableO = <A>(initState: O.Option<A>): [O.Option<A>, Dispatch<SetStateAction<O.Option<A>>>] =>
   useStable(initState, O.getEq(Eq.eqStrict), showOption);
