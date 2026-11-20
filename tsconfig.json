@@ -2,13 +2,12 @@
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
     "declaration": true,
-    "downlevelIteration": true,
     "forceConsistentCasingInFileNames": true,
     "isolatedModules": true,
     "jsx": "react",
     "lib": ["es2015"],
     "module": "es2015",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "noEmitOnError": true,
     "noErrorTruncation": true,
     "noFallthroughCasesInSwitch": true,
@@ -19,9 +18,10 @@
     "noUnusedParameters": false,
     "pretty": true,
     "outDir": "./dist/es2015",
+    "rootDir": "./src",
     "sourceMap": true,
     "strict": true,
-    "target": "es5"
+    "target": "es2015"
   },
   "include": ["src/*"]
 }
