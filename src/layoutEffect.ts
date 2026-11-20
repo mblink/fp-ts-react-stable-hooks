@@ -7,7 +7,7 @@ export const useStableLayoutEffect = <A extends ReadonlyArray<unknown>>(
   callback: EffectCallback,
   dependencies: A,
   eq: Eq.Eq<A>,
-  options?: StableHookOptions
+  options?: StableHookOptions<A>,
 ): ReturnType<typeof useLayoutEffect> => {
   return useLayoutEffect(callback, useEqMemoize(dependencies, eq, options));
 };
