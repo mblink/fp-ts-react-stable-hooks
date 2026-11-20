@@ -1,4 +1,5 @@
 import * as E from 'fp-ts/Either';
+import * as Eq from 'fp-ts/Eq';
 import * as N from 'fp-ts/number';
 import * as O from 'fp-ts/Option';
 import { Dispatch, SetStateAction } from 'react';
@@ -88,5 +89,21 @@ describe('useStable', () => {
     rerender({ eq: never });
     act(() => result.current[1](o1b));
     expect(result.current[0]).toBe(o1b);
+  });
+
+  test('applies queued updater functions to the latest state', () => {
+    const { result } = renderHook(() => useStable<number>(0, N.Eq));
+    act(() => {
+      result.current[1](n => n + 1);
+      result.current[1](n => n + 1);
+    });
+    expect(result.current[0]).toBe(2);
+  });
+
+  test('stores a function as state without calling it', () => {
+    const fn = jest.fn(() => 42);
+    const { result } = renderHook(() => useStable(fn, Eq.eqStrict));
+    expect(result.current[0]).toBe(fn);
+    expect(fn).not.toHaveBeenCalled();
   });
 });
