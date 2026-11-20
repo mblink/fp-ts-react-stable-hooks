@@ -21,10 +21,10 @@ Never silence with `as`, `any`, `@ts-ignore`, or an `eslint-disable`. A rule tha
 1. **Keep generics flowing.** The deps type `A` is inferred once from `dependencies` and constrains `eq: Eq.Eq<A>` and `options?: StableHookOptions<A>`; a new option that sees the deps takes `A` too. Put each type parameter where it's inferred; don't add a second parameter another one already determines.
 2. **Return React's own types** (`ReturnType<typeof useEffect>`, `[A, Dispatch<SetStateAction<A>>]`) so the stable hooks are drop-in replacements; consumers swap the import and nothing else changes.
 3. **`unknown`, never `any`,** for values you don't inspect (`ReadonlyArray<unknown>`). The existing `any` in `useStableCallback`'s `T extends (...args: any[]) => any` mirrors React's own `useCallback` signature and is deliberate.
-4. **Verify type claims with the compiler, not memory** — assignability, inference, variance: prove it in a scratch file with `npx tsc --strict --noEmit --skipLibCheck <scratch>.ts` before relying on it.
+4. **Verify type claims with the compiler, not memory** — assignability, inference, variance: prove it in a scratch `test/zz-scratch.ts` (it picks up the project's strict settings and path resolution), run `npm run typecheck`, then delete it. Don't run `tsc` on a single file: TypeScript 6 refuses (TS5112) when a `tsconfig.json` is present.
 5. **Each compiler fix is semantically complete**, never a silencer.
 6. **Optional means rarely passed.** `options?` is the last parameter so existing call sites keep compiling; a new required parameter is a breaking change (major version).
 
 ## Compiler settings that bite
 
-`strict` and `noUncheckedIndexedAccess` are on: `deps[0]` is `T | undefined`. `src/` targets ES2015 with `lib: ["es2015"]` and no DOM or Node types, so no `Array.prototype.includes`, `Object.entries`, `window`, etc.; globals the library genuinely needs (`process`, `console`) are declared locally in the file that uses them (`useEqMemoize.ts`).
+`strict` and `noUncheckedIndexedAccess` are on: `deps[0]` is `T | undefined`. `src/` targets ES2015 with `lib: ["es2015"]` and no DOM or Node types, so no `Array.prototype.includes`, `Object.entries`, `window`, etc.; globals the library genuinely needs (`process`, `console`, `window`) are declared locally in the file that uses them.
