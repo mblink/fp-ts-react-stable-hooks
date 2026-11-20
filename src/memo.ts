@@ -3,6 +3,7 @@ import { useDebugValue, useMemo } from 'react';
 import { StableHookOptions } from './options';
 import { useEqMemoize } from './useEqMemoize';
 
+/** `useMemo` whose `dependencies` are compared with `eq` instead of `Object.is`. */
 export const useStableMemo = <A extends ReadonlyArray<unknown>, T>(
   factory: () => T,
   dependencies: A,
