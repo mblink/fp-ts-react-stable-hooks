@@ -31,7 +31,7 @@ Or individually while iterating:
 ## Public API changes
 
 - A change to anything exported from `src/index.ts` is checked against the emitted `dist/es2015/*.d.ts`: that's what consumers compile against.
-- A new fp-ts or React API in `src/` is checked against the peer-dependency floor (fp-ts 2.8, React 16.8), not just the installed dev version (`fp-ts` skill → The API floor). CI's `compat` job runs the fp-ts 2.8.0 type check and the tests on React 18.
+- A new fp-ts or React API in `src/` is checked against the peer-dependency floor (fp-ts 2.8, React 18.0), not just the installed dev version (`fp-ts` skill → The API floor). CI's `compat` job runs the fp-ts 2.8.0 type check, and type-checks and tests everything on React 18.0.0 with `@types/react@18`.
 - README examples touched by the change still compile: paste them into a scratch `test/*.ts` file, run `npm run typecheck`, delete it.
 - Render-prevention claims are backed by `test/renders.test.tsx`, not by reading the code.
 
@@ -45,4 +45,4 @@ Or individually while iterating:
 | No regressions | full `npm test` | "only changed one file" |
 | Subagent work integrated | your own full run after all agents returned | a subagent's "done" |
 
-Say what the checks don't prove (e.g. React 16/17 at runtime: `@testing-library/react` needs React 18+, so only the peer range covers them).
+Say what the checks don't prove (e.g. React versions between the 18.0.0 floor and the current 19.x are not each tested).

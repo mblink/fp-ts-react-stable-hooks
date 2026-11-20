@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 `fp-ts-react-stable-hooks` is a small published npm library: drop-in replacements for React hooks (`useState`, `useEffect`, `useLayoutEffect`, `useCallback`, `useMemo`) that compare values with an fp-ts `Eq` instead of reference equality, so structurally-equal fp-ts values (e.g. two `O.some(1)`) don't trigger rerenders.
 
-`react` (`>= 16.8.0`) and `fp-ts` (`>= 2.8.0`) are peer dependencies. The dev install is much newer (React 19, latest fp-ts 2.x), so the compiler accepts APIs consumers at the floor don't have — `src/` must stick to React 16.8 hooks and fp-ts 2.8 APIs (see the `fp-ts` skill). CI type-checks `src/` against fp-ts 2.8.0 and runs the tests against React 18.
+`react` (`>= 18.0.0`) and `fp-ts` (`>= 2.8.0`) are peer dependencies; React 16 and 17 are deliberately unsupported. The dev install is newer (React 19, latest fp-ts 2.x), so the compiler accepts APIs consumers at the floor don't have — `src/` must stick to React 18.0 and fp-ts 2.8 APIs (see the `fp-ts` skill). CI type-checks `src/` against fp-ts 2.8.0 and type-checks and tests everything against React 18.0.0 with React 18 types.
 
 ## Commands
 

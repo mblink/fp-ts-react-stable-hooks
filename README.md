@@ -25,7 +25,7 @@ Every time a component builds a new `Option`, `Either` or struct that is *equal*
 npm install fp-ts-react-stable-hooks
 ```
 
-Peer dependencies: `react >= 16.8.0` and `fp-ts >= 2.8.0`.
+Peer dependencies: `react >= 18.0.0` and `fp-ts >= 2.8.0`.
 
 The examples below use fp-ts 2.10+ APIs (`Eq.tuple`, `Eq.struct`, `fp-ts/number`, `fp-ts/string`). On fp-ts 2.8–2.9 use `Eq.getTupleEq`, `Eq.getStructEq`, `Eq.eqNumber` and `Eq.eqString` instead.
 
