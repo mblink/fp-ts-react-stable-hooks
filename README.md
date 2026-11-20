@@ -141,8 +141,9 @@ Tell the React hooks lint rule to check the stable hooks' dependency arrays:
 npm ci
 npm test               # Jest
 npm run typecheck      # tsc over src and tests
+npm run knip           # unused files, exports and dependencies (strict)
 npm run lint           # ESLint with --fix
-npm run prepublishOnly # clean, build, test, lint (what CI runs)
+npm run prepublishOnly # clean, build, test, lint
 ```
 
 The test suite includes render-counting tests (`test/renders.test.tsx`) that check the library's core promise, that equal values don't cause renders, alongside a plain-React control case for each. AI coding agents: see [`CLAUDE.md`](CLAUDE.md) and `.claude/skills/` for repository conventions.

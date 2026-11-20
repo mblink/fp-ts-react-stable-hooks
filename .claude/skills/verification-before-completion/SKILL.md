@@ -12,10 +12,10 @@ and confirm it supports the claim.
 
 ## The checks
 
-CI runs `npm run prepublishOnly` (clean, build, `jest --ci --silent`, lint with `--max-warnings 0`). Run the same thing before calling anything done:
+CI runs `npm run typecheck`, `npm run knip` and `npm run prepublishOnly` (clean, build, `jest --ci --silent`, lint with `--max-warnings 0`). Run the same before calling anything done:
 
 ```bash
-npm run prepublishOnly
+npm run typecheck && npm run knip && npm run prepublishOnly
 ```
 
 Or individually while iterating:
@@ -24,6 +24,7 @@ Or individually while iterating:
 |---|---|---|
 | Build (ESM + CJS) | `npm run build` | exit 0; both `dist/es2015` and `dist/lib` emitted (`noEmitOnError` is on) |
 | Types | `npm run typecheck` | 0 errors (ts-jest reports type errors per file, this shows them all) |
+| Unused code / deps | `npm run knip` | exit 0 in both passes (default, then `--production --strict`); config hints and tag hints count as failures |
 | Tests | `npm test` | all pass |
 | Lint | `npm run lint:no-fix -- --max-warnings 0` | 0 warnings — every rule is `warn`, but any warning fails CI |
 

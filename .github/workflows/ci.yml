@@ -16,6 +16,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run typecheck
+      - run: npm run knip
       - run: npm run prepublishOnly
 
   compat:

@@ -12,6 +12,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.json && tsc -p tsconfig.commonjs.json",
     "clean": "rimraf ./dist",
+    "knip": "knip && knip --production --strict",
     "lint:no-fix": "eslint 'src/**/*.{ts,tsx}' 'test/**/*.{ts,tsx}'",
     "lint": "npm run lint:no-fix -- --fix",
     "prepublishOnly": "npm run clean && npm run build && npm run test -- --ci --silent && npm run lint:no-fix -- --max-warnings 0",
@@ -55,6 +56,7 @@
     "fp-ts": "^2.16.11",
     "jest": "^30.5.2",
     "jest-environment-jsdom": "^30.5.2",
+    "knip": "^6.47.0",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "rimraf": "^6.1.4",

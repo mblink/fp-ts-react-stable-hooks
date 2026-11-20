@@ -41,7 +41,9 @@ export const useStable = <A>(
 };
 
 // DevTools labels. Payloads are passed through raw (not stringified) so any value is inspectable and nothing throws.
+/** @internal Exported for tests only. */
 export const showOption = O.fold<unknown, unknown>(() => 'None', a => ({ Some: a }));
+/** @internal Exported for tests only. */
 export const showEither = E.fold<unknown, unknown, unknown>(l => ({ Left: l }), r => ({ Right: r }));
 
 /** `useStable` for an `Option`, comparing the inner value with strict (`===`) equality. */
