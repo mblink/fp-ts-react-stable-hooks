@@ -11,7 +11,7 @@ description: fp-ts rules for this library — the fp-ts 2.8 API floor, import st
 
 - **`src/` uses only APIs present in fp-ts 2.8**: `Eq.eqStrict`, `Eq.getTupleEq`, `Eq.getStructEq`, `O.getEq`, `E.getEq`, `O.fold`, `E.fold`. Not `Eq.tuple`, `Eq.struct`, `O.match`, `N.Eq`, `S.Eq` or the `fp-ts/number`/`fp-ts/string` modules (2.10+). Check with `npm i --no-save fp-ts@2.8.0 && npx tsc -p tsconfig.json --noEmit` (then `npm ci` to restore), or raise the peer range deliberately (a breaking change for consumers).
 - `test/` and README examples use current APIs (`Eq.tuple`, `N.Eq`); the README notes `Eq.getTupleEq` for older versions.
-- Same for React: peer `>= 16.8.0`; no hooks newer than 16.8 (`useId`, `useSyncExternalStore`, `useTransition`) in `src/`.
+- Same for React: peer `>= 18.0.0` (React 16/17 are unsupported). React 18 APIs (`useId`, `useSyncExternalStore`, `useTransition`) are fine; nothing newer (`use`, `useActionState`, `useOptimistic` are React 19).
 
 ## Imports
 
