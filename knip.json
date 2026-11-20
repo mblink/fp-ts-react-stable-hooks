@@ -1,0 +1,55 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "project": [
+    "src/**/*.ts!",
+    "test/**/*.{ts,tsx}"
+  ],
+  "include": [
+    "files",
+    "dependencies",
+    "devDependencies",
+    "optionalPeerDependencies",
+    "unlisted",
+    "binaries",
+    "unresolved",
+    "exports",
+    "types",
+    "nsExports",
+    "nsTypes",
+    "duplicates",
+    "enumMembers",
+    "namespaceMembers",
+    "catalog",
+    "catalogReferences",
+    "subpaths",
+    "cycles"
+  ],
+  "ignoreExportsUsedInFile": false,
+  "ignoreIssues": {
+    "dist/**": [
+      "unlisted"
+    ]
+  },
+  "treatConfigHintsAsErrors": true,
+  "treatTagHintsAsErrors": true,
+  "rules": {
+    "binaries": "error",
+    "catalog": "error",
+    "catalogReferences": "error",
+    "cycles": "error",
+    "dependencies": "error",
+    "devDependencies": "error",
+    "duplicates": "error",
+    "enumMembers": "error",
+    "exports": "error",
+    "files": "error",
+    "namespaceMembers": "error",
+    "nsExports": "error",
+    "nsTypes": "error",
+    "optionalPeerDependencies": "error",
+    "subpaths": "error",
+    "types": "error",
+    "unlisted": "error",
+    "unresolved": "error"
+  }
+}
