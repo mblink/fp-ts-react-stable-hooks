@@ -13,9 +13,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `npm test` — Jest (ts-jest, jsdom, uses `test/tsconfig.json`)
 - `npx jest test/memo.test.ts` — one file; add `-t '<name>'` for a single test
 - `npm run typecheck` — `tsc` over `src/` and `test/` (ts-jest only reports per file)
+- `npm run knip` — strict [knip](https://knip.dev) (`knip.json`): unused files, exports, types and dependencies, unlisted dependencies and import cycles, run twice: over everything, then `--production --strict` over shipped code only (no devDependency imports, no test-only exports). Must exit 0; CI runs it. An export that exists only for tests is tagged `/** @internal */`.
 - `npm run lint` — ESLint (`eslint.config.mjs`, flat config) with `--fix`; `npm run lint:no-fix` to check only
 - `npm run build` — compiles twice: `tsconfig.json` → `dist/es2015` (ESM, the `module`/`types` entry) and `tsconfig.commonjs.json` → `dist/lib` (CJS, the `main` entry); both target ES2015
-- `npm run prepublishOnly` — clean + build + `jest --ci` + lint with `--max-warnings 0`. **This is what CI runs**, so lint warnings fail CI even though every ESLint rule is configured as `warn`.
+- `npm run prepublishOnly` — clean + build + `jest --ci` + lint with `--max-warnings 0`. **CI runs `typecheck`, `knip` and `prepublishOnly`**, so lint warnings fail CI even though every ESLint rule is configured as `warn`.
 
 ## Architecture
 
