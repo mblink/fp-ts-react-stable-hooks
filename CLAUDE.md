@@ -30,4 +30,4 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 - TypeScript is strict with `noUncheckedIndexedAccess`; `src/` compiles with `lib: ["es2015"]` only (no DOM).
 - A new or renamed hook also updates the README API table and the `exhaustive-deps` `additionalHooks` regex in the README, plus `CHANGELOG.md` (`stable-hooks` skill has the checklist).
-- Repo skills live in `.claude/skills/` (`fp-ts`, `cdd`, `stable-hooks`, `testing`, `verification-before-completion`, `systematic-debugging`, `finishing-a-development-branch`, `session-debrief`, `posting-as-a-human`).
+- Repo skills live in `.claude/skills/` (`fp-ts`, `cdd`, `stable-hooks`, `testing`, `verification-before-completion`, `systematic-debugging`, `finishing-a-development-branch`, `session-debrief`).

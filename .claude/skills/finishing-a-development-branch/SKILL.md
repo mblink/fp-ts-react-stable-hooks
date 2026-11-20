@@ -34,5 +34,3 @@ gh api repos/{owner}/{repo}/issues/<N>/comments --paginate   # conversation
 ```
 
 Thread resolution is GraphQL-only (`reviewThreads { nodes { isResolved isOutdated path line } }` on the pull request). `isOutdated` means the code moved, not that the point was addressed — re-read each against current code.
-
-Replying, resolving and reviewing: `posting-as-a-human`.
