@@ -11,6 +11,8 @@ declare const console: { info: (...args: ReadonlyArray<unknown>) => void };
  * `process.env.NODE_ENV` must appear verbatim and unguarded: bundlers replace that exact expression with a string
  * literal, and browsers have no `process` global afterwards. Guarding with `typeof process` would make a production
  * bundle report "not production". Unbundled code without `process` throws here and is treated as development.
+ *
+ * @internal Exported for tests only.
  */
 export const isProduction = (): boolean => {
   try {

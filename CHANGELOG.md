@@ -30,4 +30,5 @@
 ### Internal
 
 - Dev toolchain updated to React 19, TypeScript 6, Jest 30, ESLint 10 (flat config), `@testing-library/react`.
+- CI runs [knip](https://knip.dev) in strict mode (unused code and dependencies, import cycles).
 - New render-counting, StrictMode, Suspense/transition, cleanup and `debug`-option tests; CI also tests against React 18.0.0 (with React 18 types) and type-checks against fp-ts 2.8.0.
