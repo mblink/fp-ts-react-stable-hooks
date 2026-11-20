@@ -163,3 +163,30 @@ describe('effects under StrictMode', () => {
     expect(effect).toHaveBeenCalledTimes(mountCalls + 1);
   });
 });
+
+describe('dependency hooks and discarded renders', () => {
+  test('deps from a render that never commits do not count as a change', () => {
+    const never = new Promise<never>(() => undefined);
+    const effect = jest.fn();
+    const cleanup = jest.fn();
+    const factory = jest.fn((o: O.Option<number>) => ({ o }));
+    const Comp = ({ o, suspend }: { o: O.Option<number>, suspend: boolean }) => {
+      useStableEffect(() => { effect(o); return cleanup; }, [o], nEq);
+      const memoized = useStableMemo(() => factory(o), [o], nEq);
+      if (suspend) {
+        throw never;
+      }
+      return <span>{O.getOrElse(() => -1)(memoized.o)}</span>;
+    };
+    const view = render(<Suspense fallback="loading"><Comp o={o1a} suspend={false} /></Suspense>);
+    act(() => startTransition(() => {
+      view.rerender(<Suspense fallback="loading"><Comp o={o2} suspend /></Suspense>);
+    }));
+    act(() => view.rerender(<Suspense fallback="loading"><Comp o={o1b} suspend={false} /></Suspense>));
+    expect(view.container.textContent).toBe('1');
+    expect(effect).toHaveBeenCalledTimes(1);
+    expect(cleanup).not.toHaveBeenCalled();
+    // The suspended render legitimately computes the memo for o2; the committed o1 memo must not be recomputed.
+    expect(factory.mock.calls.filter(([o]) => O.isSome(o) && o.value === 1)).toHaveLength(1);
+  });
+});
