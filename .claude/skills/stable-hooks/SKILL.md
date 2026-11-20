@@ -7,8 +7,8 @@ description: How the stable hooks work and what a new or changed hook must touch
 
 ## How they work
 
-- **State** (`src/state.ts`): `useStable` wraps `useState`. Its setter is created once (`useCallback([])`), reads the latest `Eq` from a ref, and passes React a functional updater that returns the *previous* state object when `eq.equals` holds. Returning the identical reference lets React's eager-state check skip the render; an equal-but-new object would still rerender. Don't reintroduce `useReducer`: since React 18 it renders the component once per dispatch before bailing out (`test/renders.test.tsx` catches this).
-- **Dependency-array hooks** (effect, layoutEffect, callback, memo) all call `useEqMemoize` (`src/useEqMemoize.ts`), which stores the last-changed deps in a ref and returns `[version]`, incrementing it only when `eq` reports a change. React only ever sees that one-element array. Any new dependency-array hook goes through `useEqMemoize`; don't reimplement the comparison.
+- **State** (`src/state.ts`): `useStable` wraps `useState(() => initState)` (lazy, so function-valued state is stored, not called). Its setter is created once (`useCallback([])`), reads the `Eq` of the last committed render from a ref written only in a layout effect, and passes React a functional updater that returns the *previous* state object when `eq.equals` holds. Returning the identical reference keeps downstream memos/effects stable and lets React's eager-state check skip the render when nothing else is pending (otherwise React may render once and bail out, like plain `useState`); an equal-but-new object would always rerender. Don't reintroduce `useReducer`: since React 18 it renders the component once per dispatch before bailing out (`test/renders.test.tsx` catches this).
+- **Dependency-array hooks** (effect, layoutEffect, callback, memo) all call `useEqMemoize` (`src/useEqMemoize.ts`), which derives `[version]` from the last committed `{ deps, version }` snapshot and records new snapshots in a layout effect. React only ever sees that one-element array. Any new dependency-array hook goes through `useEqMemoize`; don't reimplement the comparison.
 - **Options** (`StableHookOptions<A>`): `debug` logs prev/next via `console.info` outside production; `format` feeds `useDebugValue` for React DevTools.
 
 ## Adding or renaming a hook — checklist
@@ -23,8 +23,8 @@ description: How the stable hooks work and what a new or changed hook must touch
 
 - Hook calls are unconditional and in a fixed order; `options?.debug` gates the log, never a hook call.
 - Never call the user's factory/callback during render outside the React hook that owns it (a `useDebugValue(factory())` once made `useStableMemo` run its factory every render).
-- Anything run during render must be cheap and side-effect free; the `debug` log is the only side effect and is dev-only.
-- `process.env.NODE_ENV` is spelled out literally (inside `isProduction`) so consumers' bundlers can replace it; the `typeof process` guard keeps unbundled ESM from throwing.
+- Render is pure: no ref writes, no logging. A render may suspend or be discarded, and anything it writes leaks into later renders (this once made a suspended transition change which `Eq` `useStable` used, and made discarded deps re-run effects). Publish values in `useIsomorphicLayoutEffect` (`src/isomorphicLayoutEffect.ts`) and cover it with a Suspense/transition test in `test/renders.test.tsx`.
+- `process.env.NODE_ENV` is read unguarded inside `isProduction`'s `try` so consumers' bundlers can replace it. Never add a `typeof process` guard: after substitution browsers have no `process`, so the guard would report "not production" and log in production (`test/options.test.ts` checks this in a `vm` context).
 
 ## Usage guidance for consumers (README / review answers)
 

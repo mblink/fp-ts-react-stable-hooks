@@ -14,7 +14,7 @@ One italic line first, a blank line, then the reply:
 ```markdown
 _Claude, on @<login>'s behalf._
 
-`useEqMemoize` only bumps the counter when `eq` reports a change, so an `Eq` that compares by
+`useEqMemoize` only bumps the version when `eq` reports a change, so an `Eq` that compares by
 reference will still fire on every render with freshly built deps.
 ```
 
