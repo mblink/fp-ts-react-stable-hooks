@@ -33,7 +33,7 @@ The examples below use fp-ts 2.10+ APIs (`Eq.tuple`, `Eq.struct`, `fp-ts/number`
 
 ### State
 
-`useStableO` and `useStableE` cover the common case of an `Option`/`Either` of primitives (inner values are compared with `===`):
+`useStableO` and `useStableE` handle `Option` and `Either`. By default the values inside are compared with `===`, which covers primitives:
 
 ```typescript
 import * as O from "fp-ts/Option";
@@ -45,7 +45,14 @@ setName(O.some("foo")); // re-renders
 setName(O.some("foo")); // equal: ignored, `name` keeps its original reference
 ```
 
-For anything else, pass an `Eq` to `useStable`:
+For structured values, pass an `Eq` for the value inside (`useStableE` takes one for each side):
+
+```typescript
+const [user, setUser] = useStableO<User>(O.none, userEq);
+const [response, setResponse] = useStableE<ApiError, User>(E.right(initialUser), apiErrorEq, userEq);
+```
+
+For any other type, pass an `Eq` to `useStable`:
 
 ```typescript
 import * as Eq from "fp-ts/Eq";
@@ -93,8 +100,8 @@ const Component = (props: { userId: O.Option<number>; query: string }) => {
 | React hook        | Stable hook             | Signature |
 |-------------------|-------------------------|-----------|
 | `useState`        | `useStable`             | `(initial: A, eq: Eq<A>, formatDebugValue?) => [A, Dispatch<SetStateAction<A>>]` |
-|                   | `useStableO`            | `(initial: Option<A>) => [Option<A>, Dispatch<…>]` — inner values compared with `===` |
-|                   | `useStableE`            | `(initial: Either<E, A>) => [Either<E, A>, Dispatch<…>]` — both sides compared with `===` |
+|                   | `useStableO`            | `(initial: Option<A>, eq?: Eq<A>) => [Option<A>, Dispatch<…>]` — `eq` defaults to `===` |
+|                   | `useStableE`            | `(initial: Either<E, A>, leftEq?: Eq<E>, rightEq?: Eq<A>) => [Either<E, A>, Dispatch<…>]` — each defaults to `===` |
 | `useEffect`       | `useStableEffect`       | `(effect, deps: A, eq: Eq<A>, options?) => void` |
 | `useLayoutEffect` | `useStableLayoutEffect` | `(effect, deps: A, eq: Eq<A>, options?) => void` |
 | `useCallback`     | `useStableCallback`     | `(callback: T, deps: A, eq: Eq<A>, options?) => T` |
@@ -122,7 +129,7 @@ useStableEffect(() => { /* ... */ }, [props.userId, props.query], depsEq, { debu
 - **The `Eq` must cover every dependency, in order.** `Eq.tuple(eqA, eqB)` for `[a, b]`. A tuple `Eq` with the wrong length or types is a compile error.
 - **Use a structural `Eq` for objects.** `useStable(obj, Eq.eqStrict)` is the same as `useState`; with an object rebuilt every render it behaves exactly like the reference comparison you were trying to avoid.
 - **Don't use stable hooks for primitive-only dependencies.** React already compares strings, numbers and booleans by value.
-- **`useStableO`/`useStableE` compare one level deep.** `O.some({ a: 1 })` vs `O.some({ a: 1 })` are *not* equal under `useStableO`; use `useStable` with `O.getEq(yourEq)`.
+- **`useStableO`/`useStableE` without an `Eq` compare one level deep.** `O.some({ a: 1 })` vs `O.some({ a: 1 })` are *not* equal under `useStableO(init)`; pass an `Eq` for the value: `useStableO(init, valueEq)`.
 - **Your `Eq` runs on every render** of a component using a dependency-array hook, so keep it fast for large structures.
 
 ## ESLint: `react-hooks/exhaustive-deps`
