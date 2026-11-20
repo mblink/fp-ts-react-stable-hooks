@@ -2,9 +2,10 @@
  * End-to-end render counting: these tests assert the library's actual promise —
  * structurally-equal fp-ts values do not cause extra renders — rather than hook return values.
  */
+import * as Eq from 'fp-ts/Eq';
 import * as N from 'fp-ts/number';
 import * as O from 'fp-ts/Option';
-import { Dispatch, SetStateAction, StrictMode, memo, useMemo, useState } from 'react';
+import { Dispatch, SetStateAction, StrictMode, Suspense, memo, startTransition, useMemo, useState } from 'react';
 import { act, render } from '@testing-library/react';
 import { nEq, o1a, o1b, o2 } from './fixtures';
 import { useStable, useStableCallback, useStableEffect, useStableMemo, useStableO } from '../src/index';
@@ -46,6 +47,73 @@ describe('useStable render behaviour', () => {
     const t = setup(() => useState(o1a));
     t.set(o1b);
     expect(t.renders()).toBe(2);
+  });
+});
+
+describe('useStable after a real change', () => {
+  test('an equal update keeps the current reference and memoized children skip it', () => {
+    const childRenders = jest.fn();
+    const Child = memo((props: { value: O.Option<number> }) => { childRenders(props.value); return null; });
+    let set: Dispatch<SetStateAction<O.Option<number>>> = () => undefined;
+    let current: O.Option<number> = O.none;
+    const Comp = () => {
+      const [s, setS] = useStableO(o1a);
+      set = setS;
+      current = s;
+      return <Child value={s} />;
+    };
+    render(<Comp />);
+    act(() => set(o2));
+    const afterChange = current;
+    // React may render Comp once more here (an update was recently processed); it must still bail out below it.
+    act(() => set(O.some(2)));
+    expect(current).toBe(afterChange);
+    expect(childRenders).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe('useStable when the Eq changes', () => {
+  const exact: Eq.Eq<number> = { equals: (a, b) => a === b };
+  const parity: Eq.Eq<number> = { equals: (a, b) => a % 2 === b % 2 };
+
+  test('an Eq from a suspended render is never used by the committed setter', () => {
+    const never = new Promise<never>(() => undefined);
+    let set: Dispatch<SetStateAction<number>> = () => undefined;
+    const Comp = ({ eq, suspend }: { eq: Eq.Eq<number>, suspend: boolean }) => {
+      const [n, setN] = useStable<number>(0, eq);
+      set = setN;
+      if (suspend) {
+        throw never;
+      }
+      return <span>{n}</span>;
+    };
+    const view = render(<Suspense fallback="loading"><Comp eq={exact} suspend={false} /></Suspense>);
+    act(() => startTransition(() => {
+      view.rerender(<Suspense fallback="loading"><Comp eq={parity} suspend /></Suspense>);
+    }));
+    expect(view.container.textContent).toBe('0'); // transition still pending, committed UI kept
+    act(() => set(2)); // exact: 2 !== 0, so this must apply
+    expect(view.container.textContent).toBe('2');
+  });
+
+  test('an update batched with an Eq change is compared with the previously committed Eq', () => {
+    let setEq: Dispatch<SetStateAction<Eq.Eq<number>>> = () => undefined;
+    let set: Dispatch<SetStateAction<number>> = () => undefined;
+    const Comp = () => {
+      const [eq, setE] = useState(() => parity);
+      const [n, setN] = useStable<number>(0, eq);
+      setEq = setE;
+      set = setN;
+      return <span>{n}</span>;
+    };
+    const view = render(<Comp />);
+    act(() => {
+      setEq(() => exact);
+      set(2); // compared with `parity` (committed when set was called): 0 and 2 are equal, so ignored
+    });
+    expect(view.container.textContent).toBe('0');
+    act(() => set(2)); // `exact` is committed now
+    expect(view.container.textContent).toBe('2');
   });
 });
 
