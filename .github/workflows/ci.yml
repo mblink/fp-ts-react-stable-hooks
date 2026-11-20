@@ -1,23 +1,44 @@
 name: CI
 
-on: push
+on:
+  push:
+  pull_request:
 
 jobs:
-  run-linters:
-    name: Run CI
+  ci:
+    name: Build, test and lint
     runs-on: ubuntu-latest
-
     steps:
-      - name: Check out Git repository
-        uses: actions/checkout@v2
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: 14
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run prepublishOnly
 
-      - name: Install Node.js dependencies
-        run: npm ci
-
-      - name : Run test
-        run: npm run prepublishOnly
+  compat:
+    name: Compatibility (${{ matrix.name }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Oldest supported React (peer floor), with its own type definitions.
+          - name: React 18.0 floor
+            install: react@18.0.0 react-dom@18.0.0 @types/react@18 @types/react-dom@18
+            run: npx tsc -p tsconfig.json --noEmit && npx tsc -p test/tsconfig.json && npx jest --ci --silent
+          # Lowest fp-ts that has the top-level module paths (`fp-ts/Eq`) used by src/.
+          - name: fp-ts 2.8.0 floor
+            install: fp-ts@2.8.0
+            run: npx tsc -p tsconfig.json --noEmit
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm install --no-save ${{ matrix.install }}
+      - run: ${{ matrix.run }}

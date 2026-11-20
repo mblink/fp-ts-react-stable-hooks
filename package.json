@@ -1,6 +1,6 @@
 {
   "name": "fp-ts-react-stable-hooks",
-  "version": "1.5.0",
+  "version": "2.0.0",
   "description": "Stable hooks for react using FP-TS equality checks instead of shallow (reference) object comparison",
   "main": "dist/lib/index.js",
   "module": "dist/es2015/index.js",
@@ -8,14 +8,16 @@
   "files": [
     "dist"
   ],
+  "sideEffects": false,
   "scripts": {
     "build": "tsc -p tsconfig.json && tsc -p tsconfig.commonjs.json",
     "clean": "rimraf ./dist",
-    "lint:no-fix": "eslint --config='.eslintrc.js' './src/*.{ts,tsx}' './test/*.{ts,tsx}'",
+    "lint:no-fix": "eslint 'src/**/*.{ts,tsx}' 'test/**/*.{ts,tsx}'",
     "lint": "npm run lint:no-fix -- --fix",
     "prepublishOnly": "npm run clean && npm run build && npm run test -- --ci --silent && npm run lint:no-fix -- --max-warnings 0",
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "typecheck": "tsc -p test/tsconfig.json"
   },
   "repository": {
     "type": "git",
@@ -40,21 +42,28 @@
   },
   "homepage": "https://github.com/mblink/fp-ts-react-stable-hooks#readme",
   "devDependencies": {
-    "@testing-library/react-hooks": "~7.0.2",
-    "@types/jest": "~27.4.1",
-    "@types/react": "^16.8.0",
-    "@typescript-eslint/eslint-plugin": "~5.13.0",
-    "@typescript-eslint/parser": "~5.13.0",
-    "eslint": "~8.10.0",
-    "fp-ts": "^2.0.0",
-    "jest": "~27.5.1",
-    "react": "^16.9.0",
-    "react-test-renderer": "~16.14.0",
-    "ts-jest": "~27.1.3",
-    "typescript": "~4.5.5"
+    "@eslint/js": "^10.0.1",
+    "@stylistic/eslint-plugin": "^6.0.1",
+    "@testing-library/dom": "^10.4.2",
+    "@testing-library/react": "^16.3.3",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^26.6.6",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "eslint": "^10.15.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "fp-ts": "^2.16.11",
+    "jest": "^30.5.2",
+    "jest-environment-jsdom": "^30.5.2",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "rimraf": "^6.1.4",
+    "ts-jest": "^29.4.15",
+    "typescript": "~6.0.3",
+    "typescript-eslint": "^8.73.0"
   },
   "peerDependencies": {
-    "fp-ts": ">= 2.0.0",
-    "react": ">= 16.8.0"
+    "fp-ts": ">=2.8.0",
+    "react": ">=18.0.0"
   }
 }
