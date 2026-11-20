@@ -27,6 +27,8 @@ npm install fp-ts-react-stable-hooks
 
 Peer dependencies: `react >= 16.8.0` and `fp-ts >= 2.8.0`.
 
+The examples below use fp-ts 2.10+ APIs (`Eq.tuple`, `Eq.struct`, `fp-ts/number`, `fp-ts/string`). On fp-ts 2.8–2.9 use `Eq.getTupleEq`, `Eq.getStructEq`, `Eq.eqNumber` and `Eq.eqString` instead.
+
 ## Usage
 
 ### State
@@ -40,7 +42,7 @@ import { useStableO } from "fp-ts-react-stable-hooks";
 const [name, setName] = useStableO<string>(O.none);
 
 setName(O.some("foo")); // re-renders
-setName(O.some("foo")); // equal: no re-render, `name` keeps its original reference
+setName(O.some("foo")); // equal: ignored, `name` keeps its original reference
 ```
 
 For anything else, pass an `Eq` to `useStable`:
@@ -58,7 +60,7 @@ const userEq = O.getEq(Eq.struct<User>({ name: S.Eq, age: N.Eq }));
 const [user, setUser] = useStable<O.Option<User>>(O.none, userEq);
 ```
 
-The setter accepts a value or an updater function, just like `useState`, and is referentially stable across renders.
+The setter accepts a value or an updater function, just like `useState`, and is referentially stable across renders. It compares with the `Eq` from the most recently committed render, so changing the `Eq` takes effect for updates made after that render commits.
 
 ### Effects, memos and callbacks
 
@@ -86,8 +88,6 @@ const Component = (props: { userId: O.Option<number>; query: string }) => {
 };
 ```
 
-`Eq.tuple` was added in fp-ts 2.10; on older versions use `Eq.getTupleEq`.
-
 ## API
 
 | React hook        | Stable hook             | Signature |
@@ -108,13 +108,13 @@ const Component = (props: { userId: O.Option<number>; query: string }) => {
 | `format` | Formats the dependencies for display in React DevTools (passed to `useDebugValue`). |
 
 ```typescript
-useStableEffect(() => { /* ... */ }, [props.userId], depsEq, { debug: true });
+useStableEffect(() => { /* ... */ }, [props.userId, props.query], depsEq, { debug: true });
 ```
 
 ## How it works
 
-- **`useStable`** wraps `useState` with a setter that compares the next value to the current one with your `Eq`. When they are equal it hands React back the *current* object, so React bails out of the render entirely and every downstream reference stays the same.
-- **The dependency-array hooks** keep the last dependencies in a ref and give React a one-element dependency array, `[version]`. `version` only increments when your `Eq` says the dependencies changed, so React sees unchanged dependencies for equal values.
+- **`useStable`** wraps `useState` with a setter that compares the next value to the current one with your `Eq`. When they are equal it hands React back the *current* object, so the state keeps its reference and nothing downstream (memos, effects, `React.memo` children) sees a change. When the component has no other pending update, React skips rendering it entirely; otherwise it may render it once more and then bail out, exactly as with plain `useState`.
+- **The dependency-array hooks** give React a one-element dependency array, `[version]`. `version` only increments when your `Eq` says the dependencies differ from the last *committed* ones, so React sees unchanged dependencies for equal values. The committed snapshot is only updated in the commit phase, so renders that suspend or are discarded (transitions, Suspense) never count as a change.
 
 ## Tips and pitfalls
 
