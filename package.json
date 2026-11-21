@@ -14,8 +14,8 @@
     "clean": "rimraf ./dist",
     "knip": "knip && knip --production --strict",
     "lint:no-fix": "eslint 'src/**/*.{ts,tsx}' 'test/**/*.{ts,tsx}'",
-    "lint": "npm run lint:no-fix -- --fix",
-    "prepublishOnly": "npm run clean && npm run build && npm run test -- --ci --silent && npm run lint:no-fix -- --max-warnings 0",
+    "lint": "eslint 'src/**/*.{ts,tsx}' 'test/**/*.{ts,tsx}' --fix",
+    "prepublishOnly": "rimraf ./dist && tsc -p tsconfig.json && tsc -p tsconfig.commonjs.json && jest --ci --silent && eslint 'src/**/*.{ts,tsx}' 'test/**/*.{ts,tsx}' --max-warnings 0",
     "test": "jest",
     "test:watch": "jest --watch",
     "typecheck": "tsc -p test/tsconfig.json"
@@ -67,5 +67,8 @@
   "peerDependencies": {
     "fp-ts": ">=2.8.0",
     "react": ">=18.0.0"
+  },
+  "allowScripts": {
+    "@parcel/watcher": false
   }
 }
